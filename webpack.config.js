@@ -5,6 +5,9 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyPlugin = require("copy-webpack-plugin");
 
+const isDev = process.env.NODE_ENV === 'development';
+const isProd = !isDev;
+
 module.exports = {
   context: path.resolve(__dirname, 'src'),
   mode: 'development',
@@ -20,7 +23,12 @@ module.exports = {
     }
   },
   plugins: [
-    new HtmlWebpackPlugin(),
+    new HtmlWebpackPlugin({
+      minify: {
+        removeComents: isProd,
+        collapseWhitespace: isProd,
+      }
+    }),
     new CleanWebpackPlugin(),
     new MiniCssExtractPlugin({
       filename: 'bundle.[hash].css'
@@ -32,4 +40,26 @@ module.exports = {
           to: path.resolve(__dirname, 'dist') },
         ]})
   ],
+  module: {
+    rules: [
+      {
+        test: /\.s[ac]ss$/i,
+        use: [
+          MiniCssExtractPlugin.loader,
+          "css-loader",
+          "sass-loader",
+        ],
+      },
+      {
+        test: /\.m?js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: ['@babel/preset-env']
+          }
+        }
+      },
+    ],
+  },
 }
