@@ -1,7 +1,7 @@
 console.log('check')
 
 const check = async (...rest) => {
-  await Promise.resolve('check123');
+  return await Promise.resolve('check123');
 }
 
-check();
+check().then(console.log);
